@@ -1,0 +1,866 @@
+
+<div class="app-shell">
+
+  <!-- HEADER -->
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark">V</span>
+      <span>VELO<span class="brand-light">AUCTIONS</span></span>
+    </a>
+
+    <nav class="navigation">
+      <a class="nav-link active" href="#marketplace">Marketplace</a>
+      <a class="nav-link" href="#how-it-works">How it works</a>
+    </nav>
+
+    <div class="header-actions">
+      <button
+        type="button"
+        class="button button-outline-dark"
+        *ngIf="!currentUser"
+        (click)="openAuthForm('login')">
+        Log in
+      </button>
+
+      <button
+        type="button"
+        class="button button-dark"
+        *ngIf="!currentUser"
+        (click)="openAuthForm('register')">
+        Sign up
+      </button>
+
+      <span class="user-greeting" *ngIf="currentUser">
+        Hi, {{ currentUser.displayName }}
+      </span>
+
+      <button
+        type="button"
+        class="button button-dark header-button"
+        (click)="openCreateForm()">
+        + Create auction
+      </button>
+
+      <button
+        type="button"
+        class="button button-outline-dark"
+        *ngIf="currentUser"
+        (click)="logout()">
+        Log out
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          THE NEXT RIDE STARTS HERE
+        </div>
+
+        <h1>
+          Find your next ride.<br>
+          <span>Bid with confidence.</span>
+        </h1>
+
+        <p class="hero-description">
+          Discover motorcycles worth riding. Explore auctions,
+          follow the action and find your next machine.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#marketplace" class="button button-light">
+            Explore auctions <span>↗</span>
+          </a>
+
+          <button
+            type="button"
+            class="button button-outline"
+            (click)="openCreateForm()">
+            List a motorcycle
+          </button>
+        </div>
+
+        <div class="hero-note">
+          <span class="note-line"></span>
+          YOUR NEXT CHAPTER IS TWO WHEELS AWAY
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="visual-circle circle-one"></div>
+        <div class="visual-circle circle-two"></div>
+        <div class="visual-number">01</div>
+
+        <div class="visual-caption">
+          <span>CURATED MOTORCYCLE AUCTIONS</span>
+          <span>BUILT FOR RIDERS.</span>
+        </div>
+
+        <div class="visual-vertical">VELO AUCTIONS / EST. 2026</div>
+        <div class="visual-line"></div>
+      </div>
+    </section>
+
+    <!-- STATISTICS -->
+    <section class="stats-section">
+      <div class="stat">
+        <span class="stat-label">TOTAL LISTINGS</span>
+        <strong>{{ auctions.length }}</strong>
+        <span class="stat-note">Motorcycles on the platform</span>
+      </div>
+
+      <div class="stat">
+        <span class="stat-label">LIVE AUCTIONS</span>
+        <strong>{{ liveCount }}</strong>
+        <span class="stat-note">
+          <span class="status-dot"></span> Accepting bids
+        </span>
+      </div>
+
+      <div class="stat">
+        <span class="stat-label">UPCOMING</span>
+        <strong>{{ scheduledCount }}</strong>
+        <span class="stat-note">Scheduled auctions</span>
+      </div>
+
+      <div class="stat">
+        <span class="stat-label">COMPLETED</span>
+        <strong>{{ closedCount }}</strong>
+        <span class="stat-note">Closed auctions</span>
+      </div>
+    </section>
+
+    <!-- MARKETPLACE -->
+    <section class="marketplace" id="marketplace">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow section-eyebrow">THE COLLECTION</div>
+          <h2>Explore auctions<span>.</span></h2>
+          <p class="section-description">
+            Your next motorcycle might be one bid away.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="button button-dark"
+          (click)="openCreateForm()">
+          + List a motorcycle
+        </button>
+      </div>
+
+      <!-- SEARCH AND FILTERS -->
+      <div class="toolbar">
+        <div class="search-box">
+          <span class="search-icon">⌕</span>
+
+          <input
+            type="text"
+            placeholder="Search motorcycles..."
+            [(ngModel)]="searchTerm"
+            aria-label="Search auctions">
+
+          <span class="search-shortcut">SEARCH</span>
+        </div>
+
+        <div class="filter-group" aria-label="Filter auctions">
+          <button
+            type="button"
+            class="filter-button"
+            [class.selected]="statusFilter === 'ALL'"
+            (click)="statusFilter = 'ALL'">
+            All auctions
+          </button>
+
+          <button
+            type="button"
+            class="filter-button"
+            [class.selected]="statusFilter === 'LIVE'"
+            (click)="statusFilter = 'LIVE'">
+            <span class="status-dot"></span> Live
+          </button>
+
+          <button
+            type="button"
+            class="filter-button"
+            [class.selected]="statusFilter === 'SCHEDULED'"
+            (click)="statusFilter = 'SCHEDULED'">
+            Upcoming
+          </button>
+
+          <button
+            type="button"
+            class="filter-button"
+            [class.selected]="statusFilter === 'CLOSED'"
+            (click)="statusFilter = 'CLOSED'">
+            Closed
+          </button>
+
+          <button
+            type="button"
+            class="filter-button"
+            [class.selected]="statusFilter === 'EXPIRED'"
+            (click)="statusFilter = 'EXPIRED'">
+            Expired
+          </button>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div
+        *ngIf="successMessage"
+        class="alert success-alert"
+        role="status">
+        {{ successMessage }}
+        <button
+          type="button"
+          (click)="successMessage = ''"
+          aria-label="Dismiss">×</button>
+      </div>
+
+      <div
+        *ngIf="errorMessage"
+        class="alert error-alert"
+        role="alert">
+        {{ errorMessage }}
+        <button
+          type="button"
+          (click)="errorMessage = ''"
+          aria-label="Dismiss">×</button>
+      </div>
+
+      <!-- LOADING -->
+      <div *ngIf="loading" class="loading-state">
+        <div class="loader"></div>
+        <p>Loading the collection...</p>
+      </div>
+
+      <!-- AUCTION CARDS -->
+      <div
+        *ngIf="!loading && filteredAuctions.length > 0"
+        class="auction-grid">
+
+        <article
+          class="auction-card"
+          *ngFor="let auction of filteredAuctions; trackBy: trackByAuction">
+
+          <div class="bike-art">
+            <div class="bike-art-top">
+              <span class="bike-category">MOTORCYCLE / AUCTION</span>
+              <span class="auction-number">
+                #{{ getAuctionId(auction).slice(0, 6) || 'NEW' }}
+              </span>
+            </div>
+
+            <div class="bike-placeholder" aria-hidden="true">
+              <svg
+                viewBox="0 0 360 150"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                focusable="false">
+
+                <!-- Wheels -->
+                <circle cx="83" cy="105" r="29"
+                        stroke="currentColor" stroke-width="4.5"/>
+                <circle cx="83" cy="105" r="18"
+                        stroke="currentColor" stroke-width="1.5" opacity=".45"/>
+                <circle cx="83" cy="105" r="4"
+                        fill="currentColor"/>
+
+                <circle cx="278" cy="105" r="29"
+                        stroke="currentColor" stroke-width="4.5"/>
+                <circle cx="278" cy="105" r="18"
+                        stroke="currentColor" stroke-width="1.5" opacity=".45"/>
+                <circle cx="278" cy="105" r="4"
+                        fill="currentColor"/>
+
+                <!-- Frame -->
+                <path
+                  d="M83 105 L126 67 L164 105 L110 105
+                     L145 76 L198 76 L236 105 L164 105
+                     L183 61 L222 61 L246 82 L278 105"
+                  stroke="currentColor"
+                  stroke-width="4.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+
+                <!-- Seat and fuel tank -->
+                <path
+                  d="M124 64 L146 55 L170 57"
+                  stroke="currentColor"
+                  stroke-width="6"
+                  stroke-linecap="round"/>
+                <path
+                  d="M145 68 Q158 54 177 59 L199 72
+                     L185 82 L153 81 Z"
+                  fill="currentColor"
+                  opacity=".18"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linejoin="round"/>
+
+                <!-- Handlebar and front fork -->
+                <path
+                  d="M218 60 L231 48 L245 48
+                     M231 48 L236 43
+                     M236 76 L258 105"
+                  stroke="currentColor"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+
+                <!-- Suspension, engine and exhaust -->
+                <path
+                  d="M120 78 L140 97
+                     M145 84 L155 96 L178 96 L188 82
+                     M177 98 L207 105 L224 105"
+                  stroke="currentColor"
+                  stroke-width="3.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+                <path
+                  d="M148 85 L177 85 L172 98 L152 98 Z"
+                  fill="currentColor"
+                  opacity=".16"
+                  stroke="currentColor"
+                  stroke-width="2"/>
+
+                <!-- Headlight -->
+                <circle cx="242" cy="61" r="5"
+                        stroke="currentColor" stroke-width="2.5"/>
+              </svg>
+            </div>
+
+            <span
+              class="status-badge"
+              [ngClass]="getStatusClass(auction.status)">
+              <span class="status-dot"></span>
+              {{ auction.status || 'SCHEDULED' }}
+            </span>
+
+            <div class="art-footer">
+              <span>V / COLLECTION</span>
+              <span>EST. 2026</span>
+            </div>
+          </div>
+
+          <div class="card-content">
+            <div class="card-title-row">
+              <div>
+                <span class="card-overline">
+                  LOT {{ getAuctionId(auction).slice(0, 8) }}
+                </span>
+                <h3>{{ auction.title }}</h3>
+              </div>
+
+              <span class="card-arrow">↗</span>
+            </div>
+
+            <div class="price-row">
+              <div>
+                <span class="price-label">
+                  {{ auction.status?.toUpperCase() === 'CLOSED'
+                    ? 'FINAL PRICE'
+                    : 'CURRENT PRICE' }}
+                </span>
+
+                <strong class="price">
+                  {{ getDisplayPrice(auction)
+                  | currency:'INR':'symbol':'1.0-2':'en-IN' }}
+                </strong>
+              </div>
+
+              <div class="increment">
+                <span>MIN. INCREMENT</span>
+                <strong>
+                  {{ (auction.minimumIncrement || 0)
+                  | currency:'INR':'symbol':'1.0-0':'en-IN' }}
+                </strong>
+              </div>
+            </div>
+
+            <div class="card-meta">
+              <div>
+                <span class="meta-label">STARTS</span>
+                <span class="meta-value">
+                  {{ auction.startsAt
+                    ? (auction.startsAt | date:'dd MMM yyyy, HH:mm')
+                    : 'Not specified' }}
+                </span>
+              </div>
+
+              <div>
+                <span class="meta-label">ENDS</span>
+                <span class="meta-value">
+                  {{ auction.endsAt
+                    ? (auction.endsAt | date:'dd MMM yyyy, HH:mm')
+                    : 'Not specified' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="card-actions">
+
+              <!-- Only show when the component confirms it can start -->
+              <button
+                type="button"
+                class="button button-dark card-button"
+                *ngIf="canStartAuction(auction)"
+                (click)="startAuction(auction)">
+                Start auction <span>↗</span>
+              </button>
+
+              <!-- Only show close action for a non-expired live auction -->
+              <button
+                type="button"
+                class="button button-dark card-button"
+                *ngIf="auction.status?.toUpperCase() === 'LIVE'
+                    && !isAuctionExpired(auction)"
+                (click)="closeAuction(auction)">
+                Close auction <span>→</span>
+              </button>
+
+              <span
+                class="closed-label"
+                *ngIf="auction.status?.toUpperCase() === 'CLOSED'">
+                AUCTION CLOSED
+              </span>
+
+              <span
+                class="closed-label"
+                *ngIf="auction.status?.toUpperCase() === 'EXPIRED'
+                    || isAuctionExpired(auction)">
+                AUCTION EXPIRED
+              </span>
+
+              <span class="lot-id">
+                ID {{ getAuctionId(auction).slice(0, 8) }}
+              </span>
+            </div>
+
+            <!-- BIDDING PANEL: visible only while the auction is live -->
+            <section
+              class="bidding-panel"
+              *ngIf="getEffectiveStatus(auction) === 'LIVE'"
+              aria-label="Place a bid">
+
+              <div class="bidding-heading">
+                <span class="meta-label">PLACE YOUR BID</span>
+                <p class="minimum-bid-text">
+                  Minimum next bid:
+                  <strong>
+                    {{ minimumNextBid(auction)
+                    | currency:'INR':'symbol':'1.0-2':'en-IN' }}
+                  </strong>
+                </p>
+              </div>
+
+              <form class="bid-form" (ngSubmit)="placeBid(auction)">
+                <input
+                  type="number"
+                  [name]="'bidAmount-' + getAuctionId(auction)"
+                  [(ngModel)]="bidAmounts[getAuctionId(auction)]"
+                  [min]="minimumNextBid(auction)"
+                  step="0.01"
+                  [placeholder]="'Minimum ₹' + minimumNextBid(auction)"
+                  [disabled]="submittingBidIds.has(getAuctionId(auction))"
+                  required
+                  aria-label="Your bid amount">
+
+                <button
+                  type="submit"
+                  class="button button-dark bid-submit"
+                  [disabled]="
+                    submittingBidIds.has(getAuctionId(auction)) ||
+                    bidAmounts[getAuctionId(auction)] == null ||
+                    bidAmounts[getAuctionId(auction)] < minimumNextBid(auction)
+                  ">
+                  {{ submittingBidIds.has(getAuctionId(auction))
+                  ? 'Placing bid...'
+                  : 'Place bid' }}
+                </button>
+              </form>
+            </section>
+
+            <!-- BID HISTORY -->
+            <section class="bid-history-section" aria-label="Bid history">
+              <button
+                type="button"
+                class="text-button bid-history-toggle"
+                (click)="toggleBidHistory(auction)">
+                {{ bidHistoryVisible[getAuctionId(auction)]
+                ? 'Hide bid history'
+                : 'View bid history' }}
+              </button>
+
+              <div
+                class="bid-history-list"
+                *ngIf="bidHistoryVisible[getAuctionId(auction)]">
+
+                <p *ngIf="bidHistoryByAuction[getAuctionId(auction)] === undefined">
+                  Loading bid history...
+                </p>
+
+                <p
+                  *ngIf="bidHistoryByAuction[getAuctionId(auction)]?.length === 0">
+                  No bids have been placed yet.
+                </p>
+
+                <div
+                  class="bid-history-item"
+                  *ngFor="let bid of bidHistoryByAuction[getAuctionId(auction)]">
+                  <strong>
+                    {{ bid.amount | currency:'INR':'symbol':'1.0-2':'en-IN' }}
+                  </strong>
+                  <span>
+                    {{ (bid.createdAt || bid.placedAt)
+                      ? ((bid.createdAt || bid.placedAt) | date:'dd MMM yyyy, HH:mm')
+                      : 'Time unavailable' }}
+                  </span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </article>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div
+        *ngIf="!loading && filteredAuctions.length === 0"
+        class="empty-state">
+
+        <div class="empty-icon">V.</div>
+
+        <h3>
+          {{ auctions.length === 0
+          ? 'The collection starts here.'
+          : 'No matching auctions.' }}
+        </h3>
+
+        <p>
+          {{ auctions.length === 0
+          ? 'Be the first to list a motorcycle on the platform.'
+          : 'Try another search term or change your filter.' }}
+        </p>
+
+        <button
+          *ngIf="auctions.length === 0"
+          type="button"
+          class="button button-dark"
+          (click)="openCreateForm()">
+          Create the first auction
+        </button>
+
+        <button
+          *ngIf="auctions.length > 0"
+          type="button"
+          class="button button-outline-dark"
+          (click)="searchTerm = ''; statusFilter = 'ALL'">
+          Clear filters
+        </button>
+      </div>
+
+      <div class="refresh-row">
+        <span>
+          SHOWING {{ filteredAuctions.length }} OF {{ auctions.length }} AUCTIONS
+        </span>
+
+        <button
+          type="button"
+          class="refresh-button"
+          (click)="loadAuctions()">
+          ↻ Refresh listings
+        </button>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-section" id="how-it-works">
+      <div>
+        <div class="eyebrow section-eyebrow">SIMPLE BY DESIGN</div>
+        <h2>A better way to<br>find your next ride<span>.</span></h2>
+      </div>
+
+      <div class="how-step">
+        <span class="step-number">01</span>
+        <h3>Discover</h3>
+        <p>Explore motorcycle listings and find a machine that fits your style.</p>
+      </div>
+
+      <div class="how-step">
+        <span class="step-number">02</span>
+        <h3>Follow the action</h3>
+        <p>Track auction status, starting prices and minimum bid increments.</p>
+      </div>
+
+      <div class="how-step">
+        <span class="step-number">03</span>
+        <h3>Ride away</h3>
+        <p>Find the auction that could lead you to your next motorcycle.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <a class="brand footer-brand" href="/">
+      <span class="brand-mark">V</span>
+      <span>VELO<span class="brand-light">AUCTIONS</span></span>
+    </a>
+
+    <span>BUILT FOR RIDERS. DESIGNED FOR THE NEXT CHAPTER.</span>
+    <span>© 2026 VELO AUCTIONS</span>
+  </footer>
+
+  <!-- LOGIN AND SIGNUP MODAL -->
+  <div
+    class="modal-backdrop"
+    *ngIf="showAuthForm"
+    (click)="closeAuthForm()">
+
+    <section
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="auth-title"
+      (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <div>
+          <div class="eyebrow section-eyebrow">VELO AUCTIONS ACCOUNT</div>
+
+          <h2 id="auth-title">
+            {{ authMode === 'login' ? 'Welcome back' : 'Join VELO' }}<span>.</span>
+          </h2>
+
+          <p>
+            {{ authMode === 'login'
+            ? 'Log in to continue to your auctions.'
+            : 'Create an account to start your auction journey.' }}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          (click)="closeAuthForm()"
+          aria-label="Close form">×</button>
+      </div>
+
+      <div *ngIf="authError" class="alert error-alert" role="alert">
+        {{ authError }}
+      </div>
+
+      <div *ngIf="authSuccess" class="alert success-alert" role="status">
+        {{ authSuccess }}
+      </div>
+
+      <form (ngSubmit)="submitAuth()" #authForm="ngForm">
+
+        <div *ngIf="authMode === 'register'">
+          <label for="displayName">Full name *</label>
+          <input
+            id="displayName"
+            name="displayName"
+            type="text"
+            [(ngModel)]="registerData.displayName"
+            placeholder="Your name"
+            required
+            maxlength="100">
+        </div>
+
+        <ng-container *ngIf="authMode === 'login'; else registerFields">
+          <label for="loginEmail">Email address *</label>
+          <input
+            id="loginEmail"
+            name="loginEmail"
+            type="email"
+            [(ngModel)]="loginData.email"
+            placeholder="you@example.com"
+            autocomplete="username"
+            required
+            email>
+
+          <label for="loginPassword">Password *</label>
+          <input
+            id="loginPassword"
+            name="loginPassword"
+            type="password"
+            [(ngModel)]="loginData.password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required>
+        </ng-container>
+
+        <ng-template #registerFields>
+          <label for="registerEmail">Email address *</label>
+          <input
+            id="registerEmail"
+            name="registerEmail"
+            type="email"
+            [(ngModel)]="registerData.email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+            email>
+
+          <label for="registerPassword">Password *</label>
+          <input
+            id="registerPassword"
+            name="registerPassword"
+            type="password"
+            [(ngModel)]="registerData.password"
+            placeholder="Create a password"
+            autocomplete="new-password"
+            required
+            minlength="8">
+        </ng-template>
+
+        <div class="modal-actions">
+          <button
+            type="submit"
+            class="button button-dark create-submit"
+            [disabled]="authSubmitting || authForm.invalid">
+            {{ authSubmitting
+            ? 'Please wait...'
+            : authMode === 'login' ? 'Log in' : 'Create account' }}
+          </button>
+        </div>
+
+        <p class="auth-switch" *ngIf="authMode === 'login'">
+          Don't have an account?
+          <button
+            type="button"
+            class="text-button"
+            (click)="switchAuthMode('register')">
+            Sign up
+          </button>
+        </p>
+
+        <p class="auth-switch" *ngIf="authMode === 'register'">
+          Already have an account?
+          <button
+            type="button"
+            class="text-button"
+            (click)="switchAuthMode('login')">
+            Log in
+          </button>
+        </p>
+      </form>
+    </section>
+  </div>
+
+  <!-- CREATE AUCTION MODAL -->
+  <div
+    class="modal-backdrop"
+    *ngIf="showCreateForm"
+    (click)="closeCreateForm()">
+
+    <section
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="create-title"
+      (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <div>
+          <div class="eyebrow section-eyebrow">NEW LISTING</div>
+          <h2 id="create-title">Create an auction<span>.</span></h2>
+          <p>Enter the details for your motorcycle auction.</p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          (click)="closeCreateForm()"
+          aria-label="Close form">×</button>
+      </div>
+
+      <form (ngSubmit)="createAuction()" #auctionForm="ngForm">
+
+        <label for="auctionTitle">Auction title *</label>
+        <input
+          id="auctionTitle"
+          name="title"
+          type="text"
+          [(ngModel)]="newAuction.title"
+          placeholder="e.g. Honda Activa 6G"
+          required
+          maxlength="150">
+
+        <div class="form-two-columns">
+          <div>
+            <label for="startingPrice">Starting price (₹) *</label>
+            <input
+              id="startingPrice"
+              name="startingPrice"
+              type="number"
+              [(ngModel)]="newAuction.startingPrice"
+              min="0.01"
+              step="0.01"
+              required>
+          </div>
+
+          <div>
+            <label for="minimumIncrement">Minimum increment (₹) *</label>
+            <input
+              id="minimumIncrement"
+              name="minimumIncrement"
+              type="number"
+              [(ngModel)]="newAuction.minimumIncrement"
+              min="0.01"
+              step="0.01"
+              required>
+          </div>
+        </div>
+
+        <div class="form-two-columns">
+          <div>
+            <label for="startsAt">Start date and time *</label>
+            <input
+              id="startsAt"
+              name="startsAt"
+              type="datetime-local"
+              [(ngModel)]="newAuction.startsAt"
+              required>
+          </div>
+
+          <div>
+            <label for="endsAt">End date and time *</label>
+            <input
+              id="endsAt"
+              name="endsAt"
+              type="datetime-local"
+              [(ngModel)]="newAuction.endsAt"
+              required>
+          </div>
+        </div>
+
+        <p class="form-hint">
+          Choose a start time in the future and an end time after the start.
+        </p>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="button button-outline-dark"
+            (click)="closeCreateForm()">
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="button button-dark create-submit"
+            [disabled]="creating || auctionForm.invalid">
+            {{ creating ? 'Creating...' : 'Create auction' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</div>

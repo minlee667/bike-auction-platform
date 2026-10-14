@@ -1,0 +1,30 @@
+
+# IDE and editor files
+.idea/
+.vscode/
+**/.idea/
+
+# Angular dependencies and generated files
+**/node_modules/
+**/.angular/
+**/dist/
+**/coverage/
+
+# Java / Maven generated files
+**/target/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Operating system files
+.DS_Store
+Thumbs.db
