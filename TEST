@@ -1,0 +1,31 @@
+# Bike Auction Platform — Project Submission
+
+**Live Application:** https://bike-auction-platform-1-lwq6.onrender.com
+
+**GitHub Repository:** https://github.com/minlee667/bike-auction-platform
+
+**Backend API:** https://bike-auction-platform667.onrender.com
+
+**Technology Stack**
+- Frontend: Angular, TypeScript, HTML, CSS
+- Backend: Java, Spring Boot, REST APIs
+- Database: PostgreSQL
+- Security: Spring Security and JWT authentication
+- Database migrations: Flyway
+- Deployment: Render
+
+**Implemented Functionality**
+- User registration and login
+- Auction listing and creation
+- Backend API integration
+- PostgreSQL persistence
+- Authenticated operations
+- Auction bidding workflow
+
+**Test Account**
+- Username/email: [hadi@example.com]
+- Password: [Hadi1238]
+
+**Deployment Status:** The frontend and backend are deployed on Render. The backend health endpoint returns `UP`, and registration, login, and auction creation have been tested on the deployed application.
+
+**Source Code:** The GitHub repository contains the project source code.
