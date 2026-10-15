@@ -55,7 +55,7 @@ public class SecurityConfig {
                                 "/api/auctions/*/bids"
                         ).hasAnyRole("USER", "ADMIN")
 
-                        .requestMatchers("/actuator/health")
+                        .requestMatchers("/actuator/health/**")
                         .permitAll()
 
                         .anyRequest().authenticated()
