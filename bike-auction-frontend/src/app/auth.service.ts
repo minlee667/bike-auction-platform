@@ -35,7 +35,7 @@ export interface AuthUser {
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly authUrl = 'http://localhost:8085/api/auth';
+  private readonly authUrl = 'https://bike-auction-platform667.onrender.com/api/auth';
   private readonly tokenKey = 'bike_auction_token';
   private readonly userKey = 'bike_auction_user';
 

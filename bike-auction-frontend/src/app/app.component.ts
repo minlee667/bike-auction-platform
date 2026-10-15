@@ -46,7 +46,7 @@ type AuctionFilter =
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  private readonly apiUrl = 'http://localhost:8085/api/auctions';
+  private readonly apiUrl = 'https://bike-auction-platform667.onrender.com/api/auctions';
 
   auctions: Auction[] = [];
   loading = false;

@@ -6,7 +6,9 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
 
   if (
     !token ||
-    !request.url.startsWith('http://localhost:8085/api/')
+    !request.url.startsWith(
+      'https://bike-auction-platform667.onrender.com/api/'
+    )
   ) {
     return next(request);
   }
