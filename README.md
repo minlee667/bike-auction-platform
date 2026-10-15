@@ -4,7 +4,7 @@ Links
 - Live frontend: https://bike-auction-platform-1-lwq6.onrender.com
 - Backend: https://bike-auction-platform667.onrender.com
 - Backend health: https://bike-auction-platform667.onrender.com/actuator/health
-- Source: https://github.com/minlee667/bike-auction-platform
+- Source: [https://github.com/minlee667/bike-auction-platform](https://github.com/minlee667/bike-auction-platform/tree/main)
 Features
 - Browse auction listings and see status, current price, minimum increment, and start/end times.
 - Register and log in.
